@@ -8,11 +8,14 @@
 
 {% block content %}
     Results:
+    <p>
+    Your score: {{ user_score }} {{ user_cards }}
+    <br>
+    PC score: {{ computer_score }}  {{ computer_cards }}
+    </p>
+
 	<h1><font {% if result == 'You won' %} color="green" {% elif result == 'You lose' %} color="red" {% else %}
 										   color="#6495ed" {% endif %}><b>{{ result }}</b></font></h1>
-    Your score: {{ user_score }}
-	<br>
-    Opponent's score: {{ computer_score }}
 	<br>
 	<form action="/start_game" method="get">
 		<button type="submit" value="start_game">Start new game</button>
