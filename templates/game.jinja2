@@ -8,13 +8,21 @@
 {% endblock %}
 
 {% block content %}
-  <p>
-    Your score: {{ user_score }}
-    <br>
-    {% for i in user_cards %}
-      <img src="{{ url_for('static', filename=i) }}.svg" height="100">
-    {% endfor %}
-	</p>
+<p>
+  Your score: {{ user_score }}
+  <br>
+  {% for i in user_cards %}
+    <img src="{{ url_for('static', filename=i) }}.svg" height="100">
+  {% endfor %}
+</p>
+
+<p>
+  PC score: {{ computer_score }}
+  <br>
+  {% for i in computer_cards %}
+    <img src="{{ url_for('static', filename=i) }}.svg" height="100">
+  {% endfor %}
+</p>
 
 	<table>
 		<td>
