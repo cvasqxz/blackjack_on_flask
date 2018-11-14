@@ -77,7 +77,7 @@ def stop():
     while computer_score < 17:
         add_computer_card(get_card_from_deck())
         computer_score = calc_score(get_computer_cards())
-        if user_score > 21 or computer_score > user_score:
+        if computer_score > user_score:
             break
 
     computer_cards = get_computer_cards()
