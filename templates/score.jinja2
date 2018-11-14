@@ -7,15 +7,24 @@
 {% endblock %}
 
 {% block content %}
-<h1><font {% if result == 'You won' %} color="green" {% elif result == 'You lose' %} color="red" {% else %}
-color="#6495ed" {% endif %}><b>{{ result }}</b></font></h1>
+<h1 {% if result == 'You won' %} color="green" {% elif result == 'You lose' %} color="red" {% else %}
+color="#6495ed" {% endif %}><b>{{ result }}</b></h1>
     <p>
-    Your score: {{ user_score }} {{ user_cards }}
+    Your score: {{ user_score }}
     <br>
-    PC score: {{ computer_score }}  {{ computer_cards }}
+    {% for i in user_cards %}
+      <img src="{{ url_for('static', filename=i) }}.svg" height="100">
+    {% endfor %}
+    </p>
+    <p>
+    PC score: {{ computer_score }}
+    <br>
+    {% for i in computer_cards %}
+      <img src="{{ url_for('static', filename=i) }}.svg" height="100">
+    {% endfor %}
     </p>
 
 	<form action="/start_game" method="get">
-		<button type="submit" value="start_game">Start new game</button>
+		<button class="button" type="submit" value="start_game">Start new game</button>
 	</form>
 {% endblock %}
