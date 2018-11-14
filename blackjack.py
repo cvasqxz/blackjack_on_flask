@@ -99,6 +99,7 @@ def generate_deck():
     types = ['S', 'C', 'D', 'H']
     for i in types:
         deck += [a+i for a in CARD_SCORES.keys()]
+    deck *= 2
     random.shuffle(deck, random.random)
     for card in deck:
         card = Deck(str(card))
