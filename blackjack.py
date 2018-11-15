@@ -1,10 +1,11 @@
-from flask import Flask
-from flask import render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, session
 import random
 from database import db_session, init_db
 from models import Deck, UserHand, ComputerHand
+from bitcoin import privtoaddr, random_key, sha256
 
 app = Flask(__name__)
+app.config.from_pyfile('settings.cfg')
 
 CARD_SCORES = {
     '2': 2,
@@ -25,8 +26,15 @@ CARD_SCORES = {
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('index.html',
+                            address=session['address'])
 
+@app.route('/new_address')
+def new_address():
+    session.pop('key', None)
+    session['key'] = sha256('KEKEKE' + random_key())
+    session['address'] = privtoaddr(session['key'], 88)
+    return redirect(url_for('home'))
 
 @app.route('/start_game')
 def start_game():
@@ -38,40 +46,29 @@ def start_game():
         add_computer_card(get_card_from_deck())
         i += 1
 
-    user_score = calc_score(get_user_cards())
-    user_cards = get_user_cards()
-    computer_score = calc_score(get_computer_cards())
-    computer_cards = get_computer_cards()
+    game_state = getstate()
     return render_template('game.jinja2',
-                            computer_score=computer_score,
-                            computer_cards=computer_cards,
-                            user_cards=user_cards,
-                            user_score=user_score)
+                            address=session['address'],
+                            game_state=game_state)
 
 
 @app.route('/get_card')
 def get_card():
     add_user_card(get_card_from_deck())
-    user_score = calc_score(get_user_cards())
-    user_cards = get_user_cards()
-    computer_score = calc_score(get_computer_cards())
-    computer_cards = get_computer_cards()
 
+    user_score = calc_score(get_user_cards())
     if user_score > 21:
         return redirect(url_for('stop'))
 
+    game_state = getstate()
     return render_template('game.jinja2',
-                            computer_score=computer_score,
-                            computer_cards=computer_cards,
-                            user_cards=user_cards,
-                            user_score=user_score)
+                            address=session['address'],
+                            game_state=game_state)
 
 
 @app.route('/stop')
 def stop():
     user_score = calc_score(get_user_cards())
-    user_cards = get_user_cards()
-
     computer_score = calc_score(get_computer_cards())
 
     while computer_score < 17:
@@ -80,7 +77,6 @@ def stop():
         if computer_score > user_score:
             break
 
-    computer_cards = get_computer_cards()
 
     if (user_score > 21 and computer_score > 21) or user_score == computer_score:
         result = 'Friendship won'
@@ -92,13 +88,19 @@ def stop():
         result = 'You won'
     else:
         result = 'You lose'
-    return render_template('score.jinja2',
-                            result=result,
-                            computer_score=computer_score,
-                            computer_cards=computer_cards,
-                            user_cards=user_cards,
-                            user_score=user_score)
 
+    game_state = getstate()
+    return render_template('score.jinja2',
+                            address=session['address'],
+                            result=result,
+                            game_state=game_state)
+
+
+def getstate():
+    return {'computer_score' : calc_score(get_computer_cards()),
+            'computer_cards' : get_computer_cards(),
+            'user_score' : calc_score(get_user_cards()),
+            'user_cards' : get_user_cards()}
 
 def init_or_flush_cards():
     '''

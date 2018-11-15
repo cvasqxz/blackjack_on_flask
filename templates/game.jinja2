@@ -9,17 +9,17 @@
 
 {% block content %}
 <p>
-  Your score: {{ user_score }}
+  Your score: {{ game_state['user_score'] }}
   <br>
-  {% for i in user_cards %}
+  {% for i in game_state['user_cards'] %}
     <img src="{{ url_for('static', filename=i) }}.svg" height="100">
   {% endfor %}
 </p>
 
 <p>
-  PC score: {{ computer_score }}
+  PC score: {{ game_state['computer_score'] }}
   <br>
-  {% for i in computer_cards %}
+  {% for i in game_state['computer_cards'] %}
     <img src="{{ url_for('static', filename=i) }}.svg" height="100">
   {% endfor %}
 </p>
